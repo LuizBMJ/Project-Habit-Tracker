@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Teste</title>
+    <title>
+        {{  config('app.name') }}
+    </title>
+
+    @vite('resources/css/app.css')
 </head>
 <body>
-    <h1>Ola</h1>
-    <p>Meu nome é {{ $name }}</p>
-    <h2>Meus hábitos</h2>
-    <ul>
-        @foreach ($habits as $habit)
-            <li>{{ $habit }}</li>
-        @endforeach
-    </ul>
+    <h1 class="text-3xl font-bold underline">
+        Hello, {{ $name }}!
+
+    </h1>
 </body>
 </html>
