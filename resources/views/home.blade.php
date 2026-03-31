@@ -3,5 +3,11 @@
         <h1>
             Olá
         </h1>
+
+        @auth
+            <p>
+                Bem vindo(a),  {{ auth()->user()->name }}
+            </p>
+        @endauth
     </main>
 </x-layout>
