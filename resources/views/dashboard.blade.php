@@ -1,9 +1,21 @@
 <x-layout>
     <main class="py-10" >
 
-        <h1>
+        <h1 class="font-bold text-4xl text-center">
             Dashboard
         </h1>
+
+        <a href="{{ route('habit.create') }}" class="p-2 border-2 bg-white font-bold bloc">
+            Cadastrar Hábito
+        </a>
+
+        @session('success')
+            <div class="flex">
+                <p class="bg-green-100 border-2 border-green-400 text-green-700 p-3 mb-4">
+                    {{ session('success') }}
+                </p>
+            </div>
+        @endsession
 
         <p>
             Bem vindo(a), {{ auth()->user()->name }}
@@ -32,7 +44,7 @@
                         Você ainda não cadastrou nenhum hábito.
                     </p>
 
-                    <a href="/habito/cadastrar" class="bg-white p-2 border-2">
+                    <a href="{{ route('habit.create') }}" class="bg-white p-2 border-2">
                         Cadastre um novo hábito agora!
                     </a>
                 @endforelse
