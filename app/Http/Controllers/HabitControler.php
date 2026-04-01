@@ -37,15 +37,27 @@ class HabitControler extends Controller
      */
     public function edit(Habit $habit)
     {
-        //
+        if($habit->user_id !== auth()->user()->id) {
+            abort(403);
+        }
+
+        return view('habits.edit', compact('habit'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Habit $habit)
+    public function update(HabitRequest $request, Habit $habit)
     {
-        //
+        if($habit->user_id !== auth()->user()->id) {
+            abort(403);
+        };
+
+        $habit->update($request->all());
+
+        return redirect()
+            ->route('site.dashboard')
+            ->with('success', 'Hábito atualizado com sucesso!');
     }
 
     /**
