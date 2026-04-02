@@ -10,7 +10,7 @@
                 Habit Tracker
             </p>
         </div>
-        <div>
+        <div class="flex gap-2 items-center">
             <!-- GITHUB -->
             @auth
             <form
@@ -32,7 +32,7 @@
         @guest
             <div class="flex gap-2">
                 <a href="{{ route('site.register') }}"
-                class="p-2 habit-shadow-lg habit-btn bg-habit-orange">
+                class="p-2 habit-shadow-lg habit-btn bg-white">
                     Registre-se
                 </a>
                 <a href="{{ route('site.login') }}"
@@ -41,6 +41,10 @@
                 </a>
             </div>
         @endguest
+
+        <a class="habit-btn habit-shadow-lg" href="https://github.com/LuizBMJ" target="_blank">
+            <x-icons.github />
+        </a>
         </div>
     </div>
 
