@@ -31,7 +31,7 @@ class HabitControler extends Controller
     {
         $validated = $request->validated();
 
-        auth()->user()->habits()->create($validated);
+        auth('web')->user()->habits()->create($validated);
 
         return redirect()
             ->route('habits.index')
@@ -43,7 +43,7 @@ class HabitControler extends Controller
      */
     public function edit(Habit $habit)
     {
-        if($habit->user_id !== auth()->user()->id) {
+        if($habit->user_id !== auth('web')->user()->id) {
             abort(403);
         }
 
@@ -55,7 +55,7 @@ class HabitControler extends Controller
      */
     public function update(HabitRequest $request, Habit $habit)
     {
-        if($habit->user_id !== auth()->user()->id) {
+        if($habit->user_id !== auth('web')->user()->id) {
             abort(403);
         };
 
@@ -71,7 +71,7 @@ class HabitControler extends Controller
      */
     public function destroy(Habit $habit)
     {
-        if($habit->user_id !== auth()->user()->id) {
+        if($habit->user_id !== auth('web')->user()->id) {
             abort(403);
         }
 
@@ -80,5 +80,11 @@ class HabitControler extends Controller
         return redirect()
             ->route('habits.index')
             ->with('success', 'Hábito deletado com sucesso!');
+    }
+
+    public function settings() {
+        $habits = auth('web')->user()->habits;
+    
+        return view('habits.settings', compact('habits'));
     }
 }
