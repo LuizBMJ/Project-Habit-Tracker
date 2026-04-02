@@ -6,12 +6,14 @@ use App\Http\Requests\HabitRequest;
 use App\Models\Habit;
 use App\Models\HabitLog;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HabitControler extends Controller
 {
+    use AuthorizesRequests;
 
     public function index(): View {
 
@@ -48,9 +50,7 @@ class HabitControler extends Controller
      */
     public function edit(Habit $habit)
     {
-        if($habit->user_id !== Auth::user()->id) {
-            abort(403);
-        }
+        $this->authorize('update', $habit);
 
         return view('habits.edit', compact('habit'));
     }
@@ -60,9 +60,7 @@ class HabitControler extends Controller
      */
     public function update(HabitRequest $request, Habit $habit)
     {
-        if($habit->user_id !== Auth::user()->id) {
-            abort(403);
-        };
+        $this->authorize('update', $habit);
 
         $habit->update($request->all());
 
@@ -76,9 +74,7 @@ class HabitControler extends Controller
      */
     public function destroy(Habit $habit)
     {
-        if($habit->user_id !== Auth::user()->id) {
-            abort(403);
-        }
+        $this->authorize('delete', $habit);
 
         $habit->delete();  
         
@@ -95,9 +91,7 @@ class HabitControler extends Controller
 
     public function toggle(Habit $habit) {
         // 1 - Verifica se o hábito pertence ao usuário autenticado
-        if($habit->user_id !== Auth::user()->id) {
-            abort(403);
-        }
+        $this->authorize('toggle', $habit);
         // 2 - Pegar a data de hoje
         $today = Carbon::today()->toDateString();
 
