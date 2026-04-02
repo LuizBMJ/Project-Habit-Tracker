@@ -2,24 +2,7 @@
 
 @php
     $selectedYear = $year ?? now()->year;
-    $startDate = \Carbon\Carbon::create($selectedYear, 1, 1);
-    $endDate = \Carbon\Carbon::create($selectedYear, 12, 31);
-    $weeks = [];
-    $currentWeek = [];
-
-    $firstDayOfWeek = $startDate->dayOfWeek;
-    for ($i = 0; $i < $firstDayOfWeek; $i++) {
-        $currentWeek[] = null;
-    }
-
-    for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-        $currentWeek[] = $date->copy();
-
-        if ($date->isSaturday() || $date->eq($endDate)) {
-            $weeks[] = $currentWeek;
-            $currentWeek = [];
-        }
-    }
+    $weeks = App\Models\Habit::generateYearGrid($selectedYear);
 @endphp
 
 <div class="mb-6">
@@ -36,13 +19,8 @@
                         @if($day === null)
                             <div class="w-3 h-3"></div>
                         @else
-                            @php 
-                                $hasdone = $habit->habitLogs
-                                    ->where('completed_at', $day->toDateString())
-                                    ->isNotEmpty();
-                            @endphp
                             <div
-                                class="w-3 h-3 rounded-xs cursor-pointer transition hover:ring-2 hover:ring-blue-400 {{ $hasdone ? 'bg-[#FF7A05]' : 'bg-[#DADFE9]' }}"
+                                class="w-3 h-3 rounded-xs cursor-pointer transition hover:ring-2 hover:ring-blue-400 {{ $habit->wasCompletedOn($day) ? 'bg-[#FF7A05]' : 'bg-[#DADFE9]' }}"
                                 title="{{ $day->format('d/m/Y') }} - {{ $day->translatedFormat('l') }}"
                             ></div>
                         @endif
