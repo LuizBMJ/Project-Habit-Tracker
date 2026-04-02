@@ -123,8 +123,29 @@ class HabitControler extends Controller
             ->with('success', $message);
     }
 
-    public function history(): View{
-        $selectedYear = Carbon::now()->year;
+    public function history(?int $year = null): View{
+        $selectedYear = $year ?? Carbon::now()->year;
+
+        // Pegar o menor ano presente em habit_logs para esse usuário
+        $minYear = HabitLog::query()
+            ->where('user_id', Auth::id())
+            ->whereNotNull('completed_at')
+            ->selectRaw('MIN(YEAR(completed_at)) as min_year')
+            ->value('min_year');
+
+        $currentYear = Carbon::now()->year;
+
+        // Se não houver registros, apresentar somente o ano atual
+        if ($minYear === null) {
+            $availableYears = [$currentYear];
+        } else {
+            // Gerar intervalo de anos a partir do primeiro ano de conclusão até o ano atual
+            $availableYears = range((int) $minYear, $currentYear);
+        }
+
+        if(!in_array($selectedYear, $availableYears)) {
+            abort(404, 'Ano inválido.');
+        }
         
         $startDate = Carbon::create($selectedYear, 1, 1)->toDateString();
         $endDate = Carbon::create($selectedYear, 12, 31)->toDateString();
@@ -135,6 +156,6 @@ class HabitControler extends Controller
         }])
         ->get();
 
-        return view('habits.history', compact('habits', 'selectedYear'));
+        return view('habits.history', compact('habits', 'selectedYear', 'availableYears'));
     }
 }

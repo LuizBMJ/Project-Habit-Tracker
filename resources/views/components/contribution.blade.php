@@ -6,10 +6,9 @@
 @endphp
 
 <div class="mb-6">
-    <div class="flex items-center justify-between mb-3">
-        <h2 class="font-bold text-lg">{{ $habit->name }}</h2>
-        <span class="text-sm text-gray-600 font-semibold">{{ $selectedYear }}</span>
-    </div>
+
+    <h2 class="font-bold text-lg">{{ $habit->name }}</h2>
+
 
     <div class="bg-orange-50 p-2 habit-shadow-lg">
         <div class="flex gap-1 justify-between w-full">

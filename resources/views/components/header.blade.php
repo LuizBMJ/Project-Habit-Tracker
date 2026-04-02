@@ -14,10 +14,13 @@
             <!-- GITHUB -->
             @auth
             <form
-            class="inline"
+            class="flex items-center gap-2"
             action="{{ route('auth.logout') }}"
             method="POST">
                 @csrf
+                <p>
+                    Bem vindo(a), <strong>{{ auth()->user()->name }}</strong>
+                </p>
                 <button
                     type="submit"
                     class="habit-btn habit-shadow-lg p-2 bg-white"
