@@ -23,13 +23,6 @@
             <ul class="flex flex-col gap-2">
 
                 @forelse ($habits as $item)
-                    @php
-                        $wasCompletedToday = $item->habitLogs()
-                            ->where('user_id', auth()->id())
-                            ->whereDate('completed_at', today())
-                            ->exists();
-                    @endphp
-
                     <li class="habit-shadow-lg p-2 bg-[#FFDAAC]">
                         <form 
                         action="{{ route('habits.toggle', $item->id) }}" method="POST" 
@@ -42,7 +35,7 @@
                             <input 
                             type="checkbox" 
                             class="w-5 h-5"
-                            {{ $wasCompletedToday ? 'checked' : '' }}
+                            {{ $item->wasCompletedToday() ? 'checked' : '' }}
                             onchange="document.getElementById('form-{{ $item->id }}').submit()"
                             >
                             <p class="font-bold text-lg">
