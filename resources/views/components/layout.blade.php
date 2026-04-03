@@ -18,6 +18,7 @@
 
     {{-- HEADER --}}
     <x-header />
+    
 
     {{ $slot }}
 

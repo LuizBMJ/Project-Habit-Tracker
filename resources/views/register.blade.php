@@ -1,5 +1,5 @@
 <x-layout>
-    <main class="py-10 px-4" >
+    <main class="py-4 px-4" >
 
         <section class="bg-white w-full max-w-md mx-auto px-6 py-8 sm:p-10 mx-auto pb-6 mt-4 habit-shadow-lg" >
 
