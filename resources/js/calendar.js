@@ -16,11 +16,12 @@ window.selectHabit = function(id, el) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function initCalendar() {
 
     const calendarEl = document.getElementById('calendar');
 
-    // pegar csrf token do meta
+    if (!calendarEl) return; // not on the calendar page
+
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute('content');
@@ -52,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(err => console.error("Erro ao carregar eventos:", err));
         },
 
-        // cursor pointer
         dayCellDidMount: function(info) {
             info.el.style.cursor = "pointer";
         },
@@ -66,51 +66,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const dayCell = info.dayEl;
 
-            // animação
             dayCell.style.transform = "scale(0.95)";
             setTimeout(() => {
                 dayCell.style.transform = "scale(1)";
             }, 120);
 
             fetch('/dashboard/habits/calendar/toggle-date', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({
-                habit_id: selectedHabit,
-                date: info.dateStr
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    habit_id: selectedHabit,
+                    date: info.dateStr
+                })
             })
-        })
-        .then(res => {
-            if (!res.ok) {
-                // This will show you the REAL status code
-                console.error('Status:', res.status, res.statusText);
-                return res.text().then(t => { throw new Error(t) });
-            }
-            return res.json();
-        })
-        .then(() => {
-            calendar.refetchEvents();
-        })
-        .catch(err => {
-            console.error("Erro ao marcar hábito:", err);
-        });
-
+            .then(res => {
+                if (!res.ok) {
+                    console.error('Status:', res.status, res.statusText);
+                    return res.text().then(t => { throw new Error(t) });
+                }
+                return res.json();
+            })
+            .then(() => {
+                calendar.refetchEvents();
+            })
+            .catch(err => {
+                console.error("Erro ao marcar hábito:", err);
+            });
         },
 
         eventDidMount: function(info) {
-
             info.el.style.border = "none";
             info.el.style.borderRadius = "6px";
             info.el.style.padding = "2px 4px";
             info.el.style.fontSize = "12px";
-
         }
 
     });
 
     calendar.render();
+}
 
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCalendar);
+} else {
+    initCalendar();
+}

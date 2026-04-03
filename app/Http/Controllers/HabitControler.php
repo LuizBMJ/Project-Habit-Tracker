@@ -175,6 +175,21 @@ class HabitControler extends Controller
         ));
     }
 
+    public function historyDay(Request $request)
+    {
+        $request->validate(['date' => 'required|date']);
+
+        $date = Carbon::parse($request->get('date'))->toDateString();
+
+        $habits = HabitLog::with('habit')
+            ->where('user_id', Auth::id())
+            ->whereDate('completed_at', $date)
+            ->get()
+            ->map(fn($log) => ['name' => $log->habit->name]);
+
+        return response()->json($habits);
+    }
+
     public function calendar()
     {
         $habits = Auth::user()->habits;
