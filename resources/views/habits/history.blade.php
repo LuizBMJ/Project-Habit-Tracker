@@ -23,14 +23,11 @@
             @forelse($habits as $habit)
             <x-contribution :$habit :year="$selectedYear" />
             @empty
-            <div>
-                <p class="text-black">
-                Nenhum hábito para exibir histórico.
+
+                <p>
+                    Nenhum hábito para exibir histórico.
                 </p>
-                <a href="{{ route('habits.create') }}" class="underline ">
-                Crie um novo hábito
-                </a>
-            </div>
+
             @endforelse
     </main>
 </x-layout>

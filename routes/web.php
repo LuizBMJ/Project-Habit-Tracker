@@ -19,25 +19,21 @@ Route::middleware('auth')->group(function() {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('auth.logout');
 
-    Route::prefix('dashboard')->group(function () {
+    Route::prefix('/dashboard')->group(function () {
 
-        Route::resource('habits', HabitControler::class)->except('show');
-
+        // ✅ Specific routes FIRST, before resource()
         Route::get('habits/historico/{year?}', [HabitControler::class, 'history'])->name('habits.history');
-
         Route::get('habits/configurar', [HabitControler::class, 'settings'])->name('habits.settings');
-
         Route::post('habits/{habit}/toggle', [HabitControler::class, 'toggle'])->name('habits.toggle');
 
         Route::prefix('habits/calendar')->name('habits.calendar.')->group(function () {
+        Route::get('/', [HabitControler::class, 'calendar'])->name('index');
+        Route::get('/events', [HabitControler::class, 'calendarEvents'])->name('events');
+        Route::post('/toggle-date', [HabitControler::class, 'calendarToggle'])->name('toggle'); // 👈 changed
+    });
 
-            Route::get('/', [HabitControler::class, 'calendar'])->name('index');
-
-            Route::get('/events', [HabitControler::class, 'calendarEvents'])->name('events');
-
-            Route::post('/toggle', [HabitControler::class, 'calendarToggle'])->name('toggle');
-
-        });
+    // ✅ Resource route LAST
+    Route::resource('habits', HabitControler::class)->except('show');
 
     });
 

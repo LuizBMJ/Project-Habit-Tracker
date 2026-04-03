@@ -126,10 +126,10 @@ class HabitControler extends Controller
             ->with($alert, $message);
     }
 
-    public function history(?int $year = null): View{
+    public function history(?int $year = null): View
+    {
         $selectedYear = $year ?? Carbon::now()->year;
 
-        // Pegar o menor ano presente em habit_logs para esse usuário
         $minYear = HabitLog::query()
             ->where('user_id', Auth::id())
             ->whereNotNull('completed_at')
@@ -138,26 +138,24 @@ class HabitControler extends Controller
 
         $currentYear = Carbon::now()->year;
 
-        // Se não houver registros, apresentar somente o ano atual
         if ($minYear === null) {
-            $availableYears = [$currentYear];
+            $availableYears = [];
         } else {
-            // Gerar intervalo de anos a partir do primeiro ano de conclusão até o ano atual
             $availableYears = range((int) $minYear, $currentYear);
         }
 
-        if(!in_array($selectedYear, $availableYears)) {
+        if(!empty($availableYears) && !in_array($selectedYear, $availableYears)) {
             abort(404, 'Ano inválido.');
         }
-        
+
         $startDate = Carbon::create($selectedYear, 1, 1)->toDateString();
         $endDate = Carbon::create($selectedYear, 12, 31)->toDateString();
 
         $habits = Auth::user()->habits()
-        ->with(['habitLogs' => function($query) use ($startDate, $endDate) {
-            $query->whereBetween('completed_at', [$startDate, $endDate]);
-        }])
-        ->get();
+            ->with(['habitLogs' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('completed_at', [$startDate, $endDate]);
+            }])
+            ->get();
 
         return view('habits.history', compact('habits', 'selectedYear', 'availableYears'));
     }
@@ -182,33 +180,34 @@ class HabitControler extends Controller
 
         $logs = $query->get();
 
-        $events = [];
+        $events = $logs->map(function ($log) {
 
-        foreach ($logs as $log) {
-            $events[] = [
+            return [
+                'id' => $log->id,
                 'title' => $log->habit->name,
-                'start' => $log->completed_at,
+                'start' => Carbon::parse($log->completed_at)->toDateString(),
                 'color' => '#22c55e',
             ];
-        }
+        });
 
         return response()->json($events);
     }
 
     public function calendarToggle(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'habit_id' => 'required|exists:habits,id',
             'date' => 'required|date'
         ]);
 
-        // 🔒 Garantir que o hábito pertence ao usuário
-        $habit = Habit::where('id', $request->habit_id)
+        $habit = Habit::where('id', $validated['habit_id'])
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
+        $date = Carbon::parse($validated['date'])->toDateString();
+
         $log = HabitLog::where('habit_id', $habit->id)
-            ->where('completed_at', $request->date)
+            ->whereDate('completed_at', $date)
             ->first();
 
         if ($log) {
@@ -217,7 +216,7 @@ class HabitControler extends Controller
             HabitLog::create([
                 'user_id' => Auth::id(),
                 'habit_id' => $habit->id,
-                'completed_at' => $request->date
+                'completed_at' => $date
             ]);
         }
 
