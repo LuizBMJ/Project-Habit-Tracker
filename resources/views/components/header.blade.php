@@ -18,7 +18,7 @@
             action="{{ route('auth.logout') }}"
             method="POST">
                 @csrf
-                <p>
+                <p class="hidden md:block">
                     Bem vindo(a), <strong>{{ auth()->user()->name }}</strong>
                 </p>
                 <button

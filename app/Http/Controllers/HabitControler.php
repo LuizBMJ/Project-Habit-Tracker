@@ -161,4 +161,66 @@ class HabitControler extends Controller
 
         return view('habits.history', compact('habits', 'selectedYear', 'availableYears'));
     }
+
+    public function calendar()
+    {
+        $habits = Auth::user()->habits;
+
+        return view('habits.calendar', compact('habits'));
+    }
+
+    public function calendarEvents(Request $request)
+    {
+        $habitId = $request->get('habit_id');
+
+        $query = HabitLog::with('habit')
+            ->where('user_id', Auth::id());
+
+        if ($habitId) {
+            $query->where('habit_id', $habitId);
+        }
+
+        $logs = $query->get();
+
+        $events = [];
+
+        foreach ($logs as $log) {
+            $events[] = [
+                'title' => $log->habit->name,
+                'start' => $log->completed_at,
+                'color' => '#22c55e',
+            ];
+        }
+
+        return response()->json($events);
+    }
+
+    public function calendarToggle(Request $request)
+    {
+        $request->validate([
+            'habit_id' => 'required|exists:habits,id',
+            'date' => 'required|date'
+        ]);
+
+        // 🔒 Garantir que o hábito pertence ao usuário
+        $habit = Habit::where('id', $request->habit_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $log = HabitLog::where('habit_id', $habit->id)
+            ->where('completed_at', $request->date)
+            ->first();
+
+        if ($log) {
+            $log->delete();
+        } else {
+            HabitLog::create([
+                'user_id' => Auth::id(),
+                'habit_id' => $habit->id,
+                'completed_at' => $request->date
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

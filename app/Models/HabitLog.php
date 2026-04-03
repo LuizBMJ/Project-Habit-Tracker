@@ -27,4 +27,5 @@ class HabitLog extends Model
     public function habit(): BelongsTo {
         return $this->belongsTo(Habit::class);
     }
+
 }

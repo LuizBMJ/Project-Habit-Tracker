@@ -23,4 +23,17 @@ Route::middleware('auth')->group(function() {
     Route::get('/dashboard/habits/historico/{year?}', [HabitControler::class, 'history'])->name('habits.history');
     Route::get('/dashboard/habits/configurar', [HabitControler::class, 'settings'])->name('habits.settings');
     Route::post('/dashboard/habits/{habit}/toggle', [HabitControler::class, 'toggle'])->name('habits.toggle');
+
+    // CALENDÁRIO DE HÁBITOS
+    Route::prefix('/dashboard/habits/calendar')
+    ->name('habits.calendar.')
+    ->group(function () {
+
+        Route::get('/', [HabitControler::class, 'calendar'])->name('index');
+
+        Route::get('/events', [HabitControler::class, 'calendarEvents'])->name('events');
+
+        Route::post('/toggle', [HabitControler::class, 'calendarToggle'])->name('toggle');
+});
+
 });
