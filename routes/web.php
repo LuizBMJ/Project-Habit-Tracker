@@ -21,6 +21,9 @@ Route::middleware('auth')->group(function() {
 
     Route::prefix('/dashboard')->group(function () {
 
+
+            // routes/web.php
+        Route::get('/habits/paginate', [HabitControler::class, 'paginate'])->name('habits.paginate');
         Route::get('habits/historico/day', [HabitControler::class, 'historyDay'])->name('habits.history.day');
         Route::get('habits/historico/{year?}', [HabitControler::class, 'history'])->name('habits.history');
 
