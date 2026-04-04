@@ -1,4 +1,4 @@
-// ── SVG icon strings (mirrors resources/views/components/icons/*.blade.php) ──
+
 const ICONS = {
     check:  `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path></svg>`,
     trash:  `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>`,
@@ -10,7 +10,6 @@ function initHabitPagination() {
     const loadMore = document.getElementById('load-more');
     if (!list || !loadMore) return;
 
-    // Prevent duplicate initialization
     if (list.dataset.initialized === 'true') return;
     list.dataset.initialized = 'true';
 
@@ -24,8 +23,6 @@ function initHabitPagination() {
     function csrfToken() {
         return document.querySelector('meta[name="csrf-token"]').content;
     }
-
-    // ── Render ────────────────────────────────────────────────────────────────
 
     function renderHabit(habit) {
         if (view === 'dashboard') {
@@ -44,10 +41,10 @@ function initHabitPagination() {
             return `
                 <li class="habit-item flex gap-2 items-center justify-between w-full"
                     data-id="${habit.id}"
-                    data-name="${habit.name.toLowerCase()}">
-                    <input type="checkbox" class="habit-checkbox w-5 h-5 cursor-pointer flex-shrink-0"
+                    data-name="${habit.name.toLowerCase()}"> 
+                    <div class="flex gap-2 items-center habit-shadow-lg p-2 bg-[#FFDAAC] w-full">
+                        <input type="checkbox" class="habit-checkbox w-5 h-5 cursor-pointer flex-shrink-0"
                         data-id="${habit.id}">
-                    <div class="habit-shadow-lg p-2 bg-[#FFDAAC] w-full">
                         <p class="font-bold text-lg">${habit.name}</p>
                     </div>
                     <a href="${editUrl}/${habit.id}/edit"
@@ -66,8 +63,6 @@ function initHabitPagination() {
         }
     }
 
-    // ── Dashboard: per-habit AJAX toggle ─────────────────────────────────────
-
     async function toggleHabit(habitId, checkbox) {
         checkbox.disabled = true;
         try {
@@ -84,15 +79,11 @@ function initHabitPagination() {
             checkbox.checked = data.completed;
         } catch (e) {
             console.error('Toggle failed:', e);
-            checkbox.checked = !checkbox.checked; // revert on error
+            checkbox.checked = !checkbox.checked; 
         } finally {
             checkbox.disabled = false;
         }
     }
-
-    // ── Shared: sync the select-all checkbox state ────────────────────────────
-    // Called after every render, toggle, and fetch so the checkbox always
-    // reflects what is actually loaded and checked in the list.
 
     function syncSelectAllCheckbox() {
         const selectAll = document.getElementById('select-all-checkbox');
@@ -103,8 +94,6 @@ function initHabitPagination() {
         selectAll.checked       = all.length > 0 && checked.length === all.length;
     }
 
-    // ── Settings: show/hide "Deletar selecionados" ────────────────────────────
-
     function syncDeleteBtn() {
         const deleteBtn = document.getElementById('delete-selected-btn');
         if (!deleteBtn) return;
@@ -112,8 +101,6 @@ function initHabitPagination() {
         deleteBtn.classList.toggle('hidden', !anyChecked);
         deleteBtn.classList.toggle('flex',   anyChecked);
     }
-
-    // ── Individual checkbox clicks on the list ────────────────────────────────
 
     list.addEventListener('change', (e) => {
         const cb = e.target.closest('.habit-checkbox');
@@ -128,8 +115,6 @@ function initHabitPagination() {
             syncDeleteBtn();
         }
     });
-
-    // ── Select-all checkbox ───────────────────────────────────────────────────
 
     const selectAllCb = document.getElementById('select-all-checkbox');
     if (selectAllCb) {
@@ -156,8 +141,6 @@ function initHabitPagination() {
             }
         });
     }
-
-    // ── Settings: delete selected ─────────────────────────────────────────────
 
     window.deleteSelectedHabits = async function () {
         const checked = [...list.querySelectorAll('.habit-checkbox:checked')];
@@ -219,8 +202,6 @@ function initHabitPagination() {
         }
     };
 
-    // ── Pagination ────────────────────────────────────────────────────────────
-
     list.addEventListener('render-habit', (e) => {
         list.insertAdjacentHTML('beforeend', renderHabit(e.detail));
         syncSelectAllCheckbox();
@@ -260,9 +241,6 @@ function initHabitPagination() {
 
             setLoadButtons(data.hasMore);
 
-            // Sync after new items are painted — picks up wasCompletedToday
-            // state on initial load AND reflects any prior select-all action
-            // when the user loads more pages.
             syncSelectAllCheckbox();
         } catch (e) {
             console.error('Failed to load habits:', e);
