@@ -1,5 +1,9 @@
 let selectedHabit = null;
 let calendar = null;
+let habitOrder = 0;
+// 0 = criação
+// 1 = alfabética
+// 2 = mais concluído
 
 window.selectHabit = function(id, el) {
 
@@ -107,6 +111,44 @@ function initCalendar() {
     });
 
     calendar.render();
+}
+
+window.toggleHabitOrder = function () {
+
+    habitOrder++;
+
+    if (habitOrder > 2) habitOrder = 0;
+
+    const container = document.querySelector('[data-habit]')?.parentElement;
+    if (!container) return;
+
+    const buttons = Array.from(container.querySelectorAll('[data-habit]:not([data-all])'));
+
+    buttons.sort((a, b) => {
+
+        if (habitOrder === 1) {
+            // ordem alfabética
+            return a.dataset.name.localeCompare(b.dataset.name);
+        }
+
+        if (habitOrder === 2) {
+            // mais concluído
+            return b.dataset.completed - a.dataset.completed;
+        }
+
+        // ordem de criação
+        return new Date(a.dataset.created) - new Date(b.dataset.created);
+    });
+
+    buttons.forEach(btn => container.appendChild(btn));
+
+    const modes = [
+        "Ordem de criação",
+        "Ordem alfabética",
+        "Mais concluído"
+    ];
+
+    mostrarToast('success', modes[habitOrder]);
 }
 
 if (document.readyState === 'loading') {

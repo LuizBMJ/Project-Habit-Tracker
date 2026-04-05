@@ -22,10 +22,25 @@
         {{-- HABIT SELECTOR --}}
         <div class="mb-6">
             @if ($habits->count() >= 1)
-                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Filtrar por hábito</p>
+                <div class="flex items-center justify-between gap-2 mb-2">
+
+                    <p class="text-sm font-bold uppercase tracking-widest text-gray-400">
+                        Filtrar por hábito
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="toggleHabitOrder()"
+                        class="habit-btn habit-shadow p-2 rounded bg-gray-100 hover:bg-habit-orange hover:text-white transition-colors"
+                        title="Alterar ordem"
+                    >
+                        <x-icons.filter />
+                    </button>
+
+                </div>
             @endif
             
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-3 border-2 p-3 rounded bg-white habit-shadow-lg">
 
                 {{-- BOTÃO TODOS --}}
                 @if($habits->count() >= 2)
@@ -46,6 +61,9 @@
                         type="button"
                         data-habit
                         data-id="{{ $habit->id }}"
+                        data-name="{{ strtolower($habit->name) }}"
+                        data-created="{{ $habit->created_at }}"
+                        data-completed="{{ $habit->habitLogs->count() }}"
                         onclick="selectHabit({{ $habit->id }}, this)"
                         class="habit-btn habit-shadow px-4 py-2 bg-gray-100 hover:bg-habit-orange hover:text-white transition-colors"
                     >
