@@ -26,7 +26,7 @@
     <x-footer />
 
     {{-- TOAST --}}
-    <x-toast />
+    <x-main-content.toast />
 
     @stack('scripts')
     <script type="module" src="{{ Vite::asset('resources/js/app.js') }}"></script>
