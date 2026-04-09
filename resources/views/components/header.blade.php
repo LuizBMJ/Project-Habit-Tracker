@@ -11,7 +11,7 @@
                 </a>
 
                 <p class="text-sm sm:text-base truncate">
-                    Habit Tracker
+                    Habitly
                 </p>
             </div>
 
