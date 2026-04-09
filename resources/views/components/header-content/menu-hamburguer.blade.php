@@ -1,58 +1,28 @@
-<!-- CONTAINER HAMBURGUER -->
-<div class="relative sm:hidden">
+<div id="mobileMenu" class="mobile-drawer">
 
-    <button 
-        onclick="toggleMobileMenu()"
-        class="habit-btn rounded habit-shadow p-2 bg-white"
-    >
-        <x-icons.menu />
-    </button>
+    @guest
+        <a href="{{ route('site.login') }}" class="btn btn--primary" style="width:100%; justify-content:center;">
+            Login
+        </a>
+        <a href="{{ route('site.register') }}" style="display:block; padding:0.5rem 0.75rem; border-radius:8px; font-size:0.88rem; font-weight:500; color:var(--color-text-primary); text-decoration:none; transition:background 0.12s;">
+            Registrar
+        </a>
+    @endguest
 
-    <!-- MENU MOBILE -->
-    <div 
-        id="mobileMenu"
-        class="absolute left-1/2 -translate-x-1/2 mt-3 bg-white rounded-lg shadow-lg p-3 flex flex-col gap-2 w-40 z-50
-            opacity-0 scale-95 -translate-y-2 pointer-events-none
-            transition-all duration-200 ease-out"
-    >
+    @auth
+        <span style="display:block; padding:0.5rem 0.75rem; font-size:0.82rem; color:var(--color-text-muted);">
+            {{ auth()->user()->name }}
+        </span>
+        <hr style="border:none; border-top:1px solid var(--color-border); margin:0.2rem 0;">
+        <form action="{{ route('dashboard.logout') }}" method="POST">
+            @csrf
+            <button type="submit" style="width:100%;">Sair</button>
+        </form>
+    @endauth
 
-        <!-- TRIÂNGULO -->
-        <div class="absolute -top-2 left-1/2 -translate-x-1/2 
-                    w-0 h-0 
-                    border-l-8 border-l-transparent
-                    border-r-8 border-r-transparent
-                    border-b-8 border-b-white">
-        </div>
-
-        @guest
-            <a 
-                href="{{ route('site.login') }}"
-                class="habit-btn habit-shadow px-3 py-1 bg-habit-orange text-center"
-            >
-                Login
-            </a>
-
-            <a 
-                href="{{ route('site.register') }}"
-                class="habit-btn habit-shadow px-3 py-1 bg-white text-center"
-            >
-                Registrar
-            </a>
-        @endguest
-
-        @auth
-            <form action="{{ route('dashboard.logout') }}" method="POST">
-                @csrf
-
-                <button 
-                    type="submit"
-                    class="habit-btn habit-shadow px-3 py-1 bg-white w-full"
-                >
-                    Sair
-                </button>
-            </form>
-        @endauth
-
-    </div>
+    <hr style="border:none; border-top:1px solid var(--color-border); margin:0.2rem 0;">
+    <a href="https://github.com/LuizBMJ/Projeto-Gerenciador-de-Habitos" target="_blank">
+        GitHub
+    </a>
 
 </div>

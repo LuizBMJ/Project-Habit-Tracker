@@ -1,34 +1,44 @@
-<header class="flex flex-col items-center justify-center">
-    <div class="bg-white border-b-2 mb-2 w-full">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 p-4 sm:justify-between">
+<header class="site-header">
+    <div class="header-inner">
 
-            <!-- LOGO -->
-            <div class="flex items-center gap-2 min-w-0">
-                <a href="{{ auth()->check() ? route('dashboard.habits.index') : route('site.index') }}"
-                    class="habit-btn habit-shadow-lg px-2 py-1 bg-habit-orange shrink-0"
-                >
-                    HT
-                </a>
+        {{-- LOGO --}}
+        <a href="{{ auth()->check() ? route('dashboard.habits.index') : route('site.index') }}" class="header-logo">
+            <span class="header-logo-mark">HT</span>
+            <span class="header-logo-name">Habitly</span>
+        </a>
 
-                <p class="text-sm sm:text-base truncate">
-                    Habitly
-                </p>
-            </div>
+        {{-- DESKTOP NAV --}}
+        <nav class="header-nav desktop-nav">
+            <x-header-content.menu />
+        </nav>
 
-            <x-header-content.menu class="hidden sm:block"/>
+        {{-- MOBILE TRIGGER --}}
+        <div class="relative sm:hidden">
+            <button
+                class="mobile-menu-btn"
+                onclick="toggleMobileMenu()"
+                aria-label="Abrir menu"
+            >
+                <x-icons.menu />
+            </button>
 
+            <x-header-content.menu-hamburguer />
         </div>
+
     </div>
-
-    <x-header-content.menu-hamburguer class="block sm:hidden"/>
-
-    <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('opacity-0');
-            menu.classList.toggle('scale-95');
-            menu.classList.toggle('-translate-y-2');
-            menu.classList.toggle('pointer-events-none');
-        }
-    </script>
 </header>
+
+<script>
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('mobileMenu');
+        if (!menu) return;
+        if (!menu.contains(e.target) && !e.target.closest('.mobile-menu-btn')) {
+            menu.classList.remove('open');
+        }
+    });
+</script>

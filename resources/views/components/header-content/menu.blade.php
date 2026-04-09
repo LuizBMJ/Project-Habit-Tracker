@@ -1,55 +1,28 @@
-<!-- AÇÕES -->
-<div class="hidden sm:flex items-center gap-2 min-w-0">
-
-    @auth
-        <form
-            class="flex items-center gap-2 min-w-0"
-            action="{{ route('dashboard.logout') }}"
-            method="POST"
-        >
+@auth
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:0.84rem; color:var(--color-text-secondary);">
+            Olá, <strong style="color:var(--color-text-primary); font-weight:600;">{{ auth()->user()->name }}</strong>
+        </span>
+        <form action="{{ route('dashboard.logout') }}" method="POST" style="display:inline;">
             @csrf
-
-            <p class="text-sm truncate max-w-[120px] sm:max-w-none">
-                Bem vindo(a), <strong>{{ auth()->user()->name }}</strong>
-            </p>
-
-            <button
-                type="submit"
-                class="habit-btn habit-shadow-lg px-2 sm:px-3 py-1 bg-white shrink-0"
-            >
-                Sair
-            </button>
+            <button type="submit" class="btn btn--ghost btn--sm">Sair</button>
         </form>
-    @endauth
+    </div>
+@endauth
 
-    @guest
-        <div class="flex items-center gap-2 min-w-0">
-            <a 
-                href="{{ route('site.register') }}"
-                class="px-2 sm:px-3 py-1 habit-shadow-lg habit-btn bg-white truncate max-w-[90px] sm:max-w-none"
-            >
-                <span class="hidden sm:inline">
-                    Registre-se
-                </span>
+@guest
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+        <a href="{{ route('site.register') }}" class="btn btn--ghost btn--sm">Registre-se</a>
+        <a href="{{ route('site.login') }}" class="btn btn--primary btn--sm">Login</a>
+    </div>
+@endguest
 
-            </a>
-
-            <a 
-                href="{{ route('site.login') }}"
-                class="px-2 sm:px-3 py-1 habit-shadow-lg habit-btn bg-habit-orange shrink-0"
-            >
-                Login
-            </a>
-        </div>
-    @endguest
-
-    <!-- GITHUB -->
-    <a 
-        class="habit-btn habit-shadow-lg p-2 flex items-center justify-center shrink-0"
-        href="https://github.com/LuizBMJ/Projeto-Gerenciador-de-Habitos" 
-        target="_blank"
-    >
-        <x-icons.github />
-    </a>
-
-</div>
+<a
+    class="btn btn--icon btn--ghost"
+    href="https://github.com/LuizBMJ/Projeto-Gerenciador-de-Habitos"
+    target="_blank"
+    aria-label="GitHub"
+    style="color:var(--color-text-secondary);"
+>
+    <x-icons.github />
+</a>

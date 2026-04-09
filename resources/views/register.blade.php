@@ -1,176 +1,122 @@
 <x-layout>
-    <main class="max-w-5xl mx-auto py-8 px-4 min-h-[80vh] w-full flex flex-col items-center justify-center" >
+    <main style="flex:1; display:flex; align-items:center; justify-content:center; padding:2rem 1rem;">
 
-        <section class="bg-white w-full max-w-md mx-auto px-6 py-8 sm:p-10 mx-auto pb-6 mt-4 habit-shadow-lg" >
+        <div class="auth-card">
 
-            <h1 class="font-bold text-2xl sm:text-3xl">
-                Registre-se
-            </h1>
+            <h1 class="auth-heading">Criar conta</h1>
+            <p class="auth-subheading">Preencha as informações para começar a registrar seus hábitos.</p>
 
-            <p>
-                Preencha as informações para cadastrar seus hábitos.
-            </p>
-
-            <hr class="pb-4">
-
-            <form action="{{ route('auth.register') }}" method="POST" class="flex flex-col">
+            <form action="{{ route('auth.register') }}" method="POST">
                 @csrf
 
-                <div class="flex flex-col gap-2 mb-4">
-                    <label for="nome">
-                        Nome
-                    </label>
-
-                    <input 
-                        type="text" 
-                        name="name"    
+                {{-- NAME --}}
+                <div class="form-group">
+                    <label class="form-label" for="name">Nome</label>
+                    <input
+                        id="name"
+                        type="text"
+                        name="name"
                         placeholder="Seu nome"
                         value="{{ old('name') }}"
-                        class="bg-white p-2 habit-shadow w-full @error('name') border-red-500 @enderror"
+                        class="form-input @error('name') form-input--error @enderror"
                     >
-
-                    <p class="text-red-500 text-sm">
-                        @error('name') 
-                            {{ $message }}
-                        @enderror
-                    </p>
+                    @error('name')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
                 </div>
 
-                <div class="flex flex-col gap-2 mb-4">
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input 
-                    type="email" 
-                    name="email"    
-                    placeholder="Seu@email.com"
-                    value="{{  old('email') }}"
-                    class="bg-white p-2 habit-shadow @error('email') border-red-500 w-full @enderror"
+                {{-- EMAIL --}}
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        placeholder="seu@email.com"
+                        value="{{ old('email') }}"
+                        class="form-input @error('email') form-input--error @enderror"
                     >
-
-                    <p class="text-red-500 text-sm">
-                        @error('email') 
-                            {{ $message }}
-                        @enderror
-                    </p>
+                    @error('email')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
                 </div>
 
-                <div class="flex flex-col gap-2 mb-4">
-                    <label for="password">
-                        Senha
-                    </label>
-
-                    <div class="relative">
-                        <input 
+                {{-- PASSWORD --}}
+                <div class="form-group">
+                    <label class="form-label" for="password">Senha</label>
+                    <div class="input-wrapper">
+                        <input
                             id="password"
-                            type="password" 
-                            name="password"    
-                            placeholder="Senha"
+                            type="password"
+                            name="password"
+                            placeholder="••••••••"
                             autocomplete="new-password"
-                            class="w-full bg-white p-2 pr-10 habit-shadow @error('password') border-red-500 @enderror"
+                            class="form-input @error('password') form-input--error @enderror"
                         >
-
-                        <button 
+                        <button
                             type="button"
+                            class="input-toggle-btn"
                             onclick="togglePassword('password', this)"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            tabindex="-1"
                         >
-                            <span class="eye-open">
-                                <x-icons.eye />
-                            </span>
-
-                            <span class="eye-closed hidden">
-                                <x-icons.eyeclosed />
-                            </span>
+                            <span class="eye-open"><x-icons.eye /></span>
+                            <span class="eye-closed hidden"><x-icons.eyeclosed /></span>
                         </button>
                     </div>
-
-                    <p class="text-red-500 text-sm">
-                        @error('password') 
-                            {{ $message }}
-                        @enderror
-                    </p>
+                    @error('password')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
                 </div>
-                
 
-                <div class="flex flex-col gap-2 mb-4">
-                    <label for="password">
-                        Repita sua senha
-                    </label>
-
-                    <div class="relative">
-                        <input 
+                {{-- CONFIRM PASSWORD --}}
+                <div class="form-group">
+                    <label class="form-label" for="password_confirmation">Confirmar senha</label>
+                    <div class="input-wrapper">
+                        <input
                             id="password_confirmation"
-                            type="password" 
-                            name="password_confirmation"    
-                            placeholder="Senha"
+                            type="password"
+                            name="password_confirmation"
+                            placeholder="••••••••"
                             autocomplete="new-password"
-                            class="w-full bg-white p-2 pr-10 habit-shadow @error('password') border-red-500 @enderror"
+                            class="form-input"
                         >
-
-                        <button 
+                        <button
                             type="button"
+                            class="input-toggle-btn"
                             onclick="togglePassword('password_confirmation', this)"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            tabindex="-1"
                         >
-                            <span class="eye-open">
-                                <x-icons.eye />
-                            </span>
-
-                            <span class="eye-closed hidden">
-                                <x-icons.eyeclosed />
-                            </span>
+                            <span class="eye-open"><x-icons.eye /></span>
+                            <span class="eye-closed hidden"><x-icons.eyeclosed /></span>
                         </button>
                     </div>
-
-                    <p class="text-red-500 text-sm">
-                        @error('password') 
-                            {{ $message }}
-                        @enderror
-                    </p>
                 </div>
-                
-                
 
-                <button 
-                    type="submit"
-                    class="w-full p-2 bg-habit-orange habit-shadow-lg habit-btn"
-                >
-                    Cadastrar
+                <button type="submit" class="btn btn--primary btn--lg" style="width:100%; margin-top:0.25rem;">
+                    Criar conta
                 </button>
-
-                <p class="text-center mt-2">
-                    Já possuí uma conta?
-                    <a href="{{ route('site.login') }}" class="underline hover:opacity-50 transtition">
-                        Faça login
-                    </a>
-                </p>
             </form>
 
-            <div>
-                <!-- Separador -->
-                <div class="flex items-center gap-3 my-4">
-                    <hr class="flex-1 border-gray-300">
-                    <span class="text-sm text-gray-400">ou</span>
-                    <hr class="flex-1 border-gray-300">
-                </div>
-                <!-- Botão Google -->
-                <a
-                    href="{{ route('auth.google.redirect') }}"
-                    class="w-full flex items-center justify-center gap-3 p-2 border border-gray-300 habit-shadow hover:bg-gray-50 transition"
-                >
-                    <!-- Logo Google SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                        <path fill="none" d="M0 0h48v48H0z"/>
-                    </svg>
-                    <span class="text-sm font-medium text-gray-700">Entrar com Google</span>
-                </a>
+            <p class="auth-footer-link">
+                Já tem uma conta?
+                <a href="{{ route('site.login') }}">Faça login</a>
+            </p>
+
+            <div class="auth-divider">
+                <hr><span>ou</span><hr>
             </div>
-        </section>
+
+            <a href="{{ route('auth.google.redirect') }}" class="btn--google">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Continuar com Google
+            </a>
+
+        </div>
+
     </main>
 </x-layout>
