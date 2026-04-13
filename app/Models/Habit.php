@@ -10,30 +10,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Habit extends Model
 {
-    use HasFactory; 
-    
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
-        'name'
-        ];
+        'name',
+    ];
 
-    
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-
-    public function habitLogs(): HasMany {
+    public function habitLogs(): HasMany
+    {
         return $this->hasMany(HabitLog::class);
     }
 
-    public function wasCompletedToday(): bool {
+    public function wasCompletedToday(): bool
+    {
         return $this->habitLogs()
             ->where('completed_at', Carbon::today()->toDateString())
             ->exists();
     }
 
-    public function wasCompletedOn(Carbon $date): bool {
+    public function wasCompletedOn(Carbon $date): bool
+    {
         return $this->habitLogs()
             ->where('completed_at', $date->toDateString())
             ->exists();
@@ -72,34 +74,33 @@ class Habit extends Model
         $logs = $this->habitLogs()
             ->orderBy('completed_at', 'desc')
             ->pluck('completed_at')
-            ->map(fn($date) => Carbon::parse($date)->startOfDay());
+            ->map(fn ($date) => Carbon::parse($date)->startOfDay())
+            ->values();
 
         if ($logs->isEmpty()) {
             return 0;
         }
 
-        $today     = Carbon::today();
+        $today = Carbon::today();
         $yesterday = Carbon::yesterday();
-        $lastLog   = $logs->first();
+        $lastLog = $logs->first();
 
-        // Se o último log não for hoje nem ontem, a sequência foi quebrada
-        if (!$lastLog->equalTo($today) && !$lastLog->equalTo($yesterday)) {
+        if (! $lastLog->equalTo($today) && ! $lastLog->equalTo($yesterday)) {
             return 0;
         }
 
-        $streak      = 0;
+        $streak = 0;
         $currentDate = $lastLog->copy();
 
         foreach ($logs as $logDate) {
             if ($logDate->equalTo($currentDate)) {
                 $streak++;
                 $currentDate->subDay();
-            } else {
+            } elseif ($logDate->lessThan($currentDate)) {
                 break;
             }
         }
 
         return $streak;
     }
-
 }

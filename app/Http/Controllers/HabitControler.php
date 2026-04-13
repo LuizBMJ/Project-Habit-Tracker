@@ -7,26 +7,29 @@ use App\Models\Habit;
 use App\Models\HabitLog;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class HabitControler extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(): View {
+    public function index(): View
+    {
 
         $habits = Auth::user()->habits()
             ->with('habitLogs')
             ->get();
         $habitCount = $habits->count();
+
         return view('dashboard', compact('habits', 'habitCount'));
     }
 
     public function create(): View
     {
         $limitReached = Auth::user()->habits()->count() >= 10;
+
         return view('habits.create', compact('limitReached'));
     }
 
@@ -57,7 +60,7 @@ class HabitControler extends Controller
     {
         $this->authorize('update', $habit);
 
-        return view('habits.edit', compact('habit'))->with('success', 'Hábito criado com sucesso!');;
+        return view('habits.edit', compact('habit'))->with('success', 'Hábito criado com sucesso!');
     }
 
     public function update(HabitRequest $request, Habit $habit)
@@ -75,16 +78,17 @@ class HabitControler extends Controller
     {
         $this->authorize('delete', $habit);
 
-        $habit->delete();  
-        
+        $habit->delete();
+
         return redirect()
             ->route('dashboard.habits.index')
             ->with('warning', 'Hábito deletado com sucesso!');
     }
 
-    public function settings() {
+    public function settings()
+    {
         $habits = Auth::user()->habits;
-    
+
         return view('habits.settings', compact('habits'));
     }
 
@@ -102,24 +106,24 @@ class HabitControler extends Controller
         if ($log) {
             $log->delete();
             $completed = false;
-            $alert     = 'warning';
-            $message   = 'Hábito desmarcado.';
+            $alert = 'warning';
+            $message = 'Hábito desmarcado.';
         } else {
             HabitLog::query()->create([
-                'user_id'      => Auth::id(),
-                'habit_id'     => $habit->id,
+                'user_id' => Auth::id(),
+                'habit_id' => $habit->id,
                 'completed_at' => $today,
             ]);
             $completed = true;
-            $alert     = 'success';
-            $message   = 'Hábito concluído.';
+            $alert = 'success';
+            $message = 'Hábito concluído.';
         }
 
         if ($request->ajax()) {
             return response()->json([
                 'completed' => $completed,
-                'message'   => $message,
-                'streak'    => $habit->getCurrentStreak(),
+                'message' => $message,
+                'streak' => $habit->getCurrentStreak(),
             ]);
         }
 
@@ -146,12 +150,12 @@ class HabitControler extends Controller
             $availableYears = range((int) $minYear, $currentYear);
         }
 
-        if (!empty($availableYears) && !in_array($selectedYear, $availableYears)) {
+        if (! empty($availableYears) && ! in_array($selectedYear, $availableYears)) {
             abort(404, 'Ano inválido.');
         }
 
         $startDate = Carbon::create($selectedYear, 1, 1)->toDateString();
-        $endDate   = Carbon::create($selectedYear, 12, 31)->toDateString();
+        $endDate = Carbon::create($selectedYear, 12, 31)->toDateString();
 
         $logCounts = HabitLog::query()
             ->where('user_id', Auth::id())
@@ -162,7 +166,7 @@ class HabitControler extends Controller
 
         $maxCount = $logCounts->max() ?? 1;
 
-        $weeks = \App\Models\Habit::generateYearGrid($selectedYear);
+        $weeks = Habit::generateYearGrid($selectedYear);
 
         $totalHabits = Auth::user()->habits()->count();
 
@@ -186,7 +190,7 @@ class HabitControler extends Controller
             ->where('user_id', Auth::id())
             ->whereDate('completed_at', $date)
             ->get()
-            ->map(fn($log) => ['name' => $log->habit->name]);
+            ->map(fn ($log) => ['name' => $log->habit->name]);
 
         return response()->json($habits);
     }
@@ -213,7 +217,7 @@ class HabitControler extends Controller
 
         $events = $logs->map(function ($log) {
             return [
-                'id'    => $log->id,
+                'id' => $log->id,
                 'title' => $log->habit->name,
                 'start' => Carbon::parse($log->completed_at)->toDateString(),
                 'color' => '#22c55e',
@@ -227,26 +231,36 @@ class HabitControler extends Controller
     {
         $validated = $request->validate([
             'habit_id' => 'required|exists:habits,id',
-            'date'     => 'required|date'
+            'date' => 'required|date',
         ]);
 
         $habit = Habit::where('id', $validated['habit_id'])
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $date = Carbon::parse($validated['date'])->toDateString();
+        $date = Carbon::parse($validated['date']);
+        $today = Carbon::today();
+
+        if ($date->greaterThan($today)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Não é possível completar hábitos em datas futuras.',
+            ], 422);
+        }
+
+        $dateStr = $date->toDateString();
 
         $log = HabitLog::where('habit_id', $habit->id)
-            ->whereDate('completed_at', $date)
+            ->whereDate('completed_at', $dateStr)
             ->first();
 
         if ($log) {
             $log->delete();
         } else {
             HabitLog::create([
-                'user_id'      => Auth::id(),
-                'habit_id'     => $habit->id,
-                'completed_at' => $date,
+                'user_id' => Auth::id(),
+                'habit_id' => $habit->id,
+                'completed_at' => $dateStr,
             ]);
         }
 
@@ -264,17 +278,17 @@ class HabitControler extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $habits = $query->get()->map(fn($h) => [
-            'id'                => $h->id,
-            'name'              => $h->name,
+        $habits = $query->get()->map(fn ($h) => [
+            'id' => $h->id,
+            'name' => $h->name,
             'wasCompletedToday' => $h->wasCompletedToday(),
-            'streak'            => $h->getCurrentStreak(),
+            'streak' => $h->getCurrentStreak(),
         ]);
 
         return response()->json([
-            'habits'    => $habits,
+            'habits' => $habits,
             'all_count' => Auth::user()->habits()->count(),
-            'total'     => $habits->count(),
+            'total' => $habits->count(),
         ]);
     }
 }

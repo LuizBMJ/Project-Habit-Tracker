@@ -110,16 +110,19 @@ function initCalendar() {
                     date: info.dateStr
                 })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Falha ao marcar hábito');
-                return res.json();
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Falha ao marcar hábito');
+                }
+                return data;
             })
             .then(() => {
                 calendar.refetchEvents();
             })
             .catch(err => {
                 console.error("Erro ao marcar hábito:", err);
-                mostrarToast('error', 'Erro ao atualizar calendário');
+                mostrarToast('error', err.message);
             });
         },
 
