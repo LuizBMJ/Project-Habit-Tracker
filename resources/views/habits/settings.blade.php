@@ -44,16 +44,6 @@
                     <p id="no-results" class="hidden text-[0.875rem] text-text-muted">
                         Nenhum hábito encontrado.
                     </p>
-                    <button id="load-more"
-                        class="hidden hover:cursor-pointer inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap bg-surface/50 backdrop-blur-sm text-text-secondary border border-border-glass hover:bg-surface/80 hover:text-text-primary active:scale-95 shadow-sm">
-                        Carregar mais
-                    </button>
-
-                    <button id="load-all-btn"
-                        class="hidden hover:cursor-pointer inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap bg-surface/50 backdrop-blur-sm text-text-secondary border border-border-glass hover:bg-surface/80 hover:text-text-primary active:scale-95 shadow-sm">
-                        Carregar tudo
-                    </button>
-
                 </div>       
             </div>
             

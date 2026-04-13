@@ -20,19 +20,33 @@ class HabitControler extends Controller
         $habits = Auth::user()->habits()
             ->with('habitLogs')
             ->get();
-        return view('dashboard', compact('habits'));
+        $habitCount = $habits->count();
+        return view('dashboard', compact('habits', 'habitCount'));
     }
 
     public function create(): View
     {
-        return view('habits.create');
+        $limitReached = Auth::user()->habits()->count() >= 10;
+        return view('habits.create', compact('limitReached'));
     }
 
     public function store(HabitRequest $request)
     {
-        $validated = $request->validated();
+        $count = Auth::user()->habits()->count();
+        if ($count >= 10) {
+            return redirect()
+                ->route('dashboard.habits.index')
+                ->with('error', 'Limite de 10 hábitos atingido.');
+        }
 
+        $validated = $request->validated();
         Auth::user()->habits()->create($validated);
+
+        if ($count + 1 === 10) {
+            return redirect()
+                ->route('dashboard.habits.index')
+                ->with('warning', 'Você atingiu o limite de hábitos');
+        }
 
         return redirect()
             ->route('dashboard.habits.index')
@@ -241,8 +255,7 @@ class HabitControler extends Controller
 
     public function paginate(Request $request)
     {
-        $search  = $request->get('search', '');
-        $loadAll = $request->boolean('load_all');
+        $search = $request->get('search', '');
 
         $query = Habit::where('user_id', Auth::id())
             ->orderBy('name');
@@ -251,41 +264,18 @@ class HabitControler extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        if ($loadAll) {
-            // Return every matching habit — no pagination
-            $habits = $query->get()->map(fn($h) => [
-                'id'                => $h->id,
-                'name'              => $h->name,
-                'wasCompletedToday' => $h->wasCompletedToday(),
-                'streak'            => $h->getCurrentStreak(),
-            ]);
-
-            return response()->json([
-                'habits'  => $habits,
-                'hasMore' => false,
-            ]);
-        }
-
-        $offset   = (int) $request->get('offset', 0);
-        $allCount = Habit::where('user_id', Auth::id())->count();
-        $total    = (clone $query)->count();
-
-        $habits = $query
-            ->skip($offset)
-            ->take(5)
-            ->get()
-            ->map(fn($h) => [
-                'id'                => $h->id,
-                'name'              => $h->name,
-                'wasCompletedToday' => $h->wasCompletedToday(),
-                'streak'            => $h->getCurrentStreak(),
-            ]);
+        // Return all habits (up to 10 as enforced by store)
+        $habits = $query->get()->map(fn($h) => [
+            'id'                => $h->id,
+            'name'              => $h->name,
+            'wasCompletedToday' => $h->wasCompletedToday(),
+            'streak'            => $h->getCurrentStreak(),
+        ]);
 
         return response()->json([
             'habits'    => $habits,
-            'hasMore'   => ($offset + 5) < $total,
-            'total'     => $total,
-            'all_count' => $allCount,
+            'all_count' => Auth::user()->habits()->count(),
+            'total'     => $habits->count(),
         ]);
     }
 }

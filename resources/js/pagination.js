@@ -4,9 +4,8 @@ const ICONS = {
     update: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM51.31,160,136,75.31,152.69,92,68,176.68ZM48,179.31,76.69,208H48Zm48,25.38L79.31,188,164,103.31,180.69,120Zm96-96L147.31,64l24-24L216,84.68Z"></path></svg>`,
 };
 
-function initHabitPagination() {
+function initHabitManager() {
     const list = document.getElementById('habit-list');
-    const loadMore = document.getElementById('load-more');
     if (!list) return;
 
     if (list.dataset.initialized === 'true') return;
@@ -90,7 +89,6 @@ function initHabitPagination() {
             const data = await res.json();
             checkbox.checked = data.completed;
 
-            // Atualiza a streak na UI em tempo real
             const li = checkbox.closest('li');
             if (li) {
                 const streakCount = li.querySelector('.streak-count');
@@ -234,54 +232,21 @@ function initHabitPagination() {
         }
     };
 
-    list.addEventListener('render-habit', (e) => {
-        list.insertAdjacentHTML('beforeend', renderHabit(e.detail));
-        syncSelectAllCheckbox();
-    });
-
-    function setLoadButtons(hasMore, total) {
-        const loadMoreBtn = document.getElementById('load-more');
-        const loadAll = document.getElementById('load-all-btn');
-
-        if (loadMoreBtn) {
-            // Show "Load More" only when there are more pages AND total > 5
-            const shouldShow = hasMore && total > 5;
-            loadMoreBtn.classList.toggle('hidden', !shouldShow);
-        }
-
-        if (loadAll) {
-            // Show "Load All" only when there are more pages AND total > 10
-            const shouldShow = hasMore && total > 10;
-            loadAll.classList.toggle('hidden', !shouldShow);
-        }
-    }
-
-    async function fetchHabits() {
+    async function loadHabits(search = '') {
         if (loading) return;
         loading = true;
-        const loadMoreBtn = document.getElementById('load-more');
-        if (loadMoreBtn) {
-            loadMoreBtn.textContent = 'Carregando...';
-            loadMoreBtn.disabled = true;
-        }
-
-        const offset = parseInt(list.dataset.offset ?? '0');
 
         try {
-            const res = await fetch(`${paginateUrl}?offset=${offset}`, {
+            const res = await fetch(`${paginateUrl}?search=${encodeURIComponent(search)}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             const data = await res.json();
 
-            // Renderizar novos hábitos
+            list.innerHTML = '';
             data.habits.forEach(habit => {
                 list.insertAdjacentHTML('beforeend', renderHabit(habit));
             });
 
-            const newOffset = offset + data.habits.length;
-            list.dataset.offset = newOffset;
-
-            // Logica de visibilidade da UI
             const searchWrapper = document.getElementById('search-wrapper');
             const searchInputWrapper = document.getElementById('search-input-wrapper');
             const selectAllWrapper = document.getElementById('select-all-wrapper');
@@ -290,7 +255,6 @@ function initHabitPagination() {
             const allCount = data.all_count ?? 0;
             const filteredCount = data.total ?? 0;
 
-            // 1. Mostrar/Esconder Search Wrapper (Row do Add/Search)
             if (searchWrapper) {
                 if (view === 'dashboard') {
                     searchWrapper.classList.remove('hidden');
@@ -299,92 +263,29 @@ function initHabitPagination() {
                 }
             }
 
-            // 2. Mostrar/Esconder Input de busca e Marcar Todos (só se tiver > 1)
-            if (searchInputWrapper) searchInputWrapper.classList.toggle('hidden', allCount <= 1);
-            if (selectAllWrapper) selectAllWrapper.classList.toggle('hidden', allCount <= 1);
+            if (searchInputWrapper) searchInputWrapper.classList.toggle('hidden', allCount <= 1 && !search);
+            if (selectAllWrapper) selectAllWrapper.classList.toggle('hidden', allCount <= 1 && !search);
 
-            // 3. Mostrar/Esconder No Results
             if (noResults) noResults.classList.toggle('hidden', filteredCount > 0);
 
-            // Use data.all_count (total real de hábitos) para a visibilidade dos botões,
-            // não data.total que representa o total filtrado/paginado atual
-            const serverTotal = data.all_count ?? data.total ?? 0;
-            setLoadButtons(data.hasMore, serverTotal);
             syncSelectAllCheckbox();
         } catch (e) {
             console.error('Failed to load habits:', e);
         } finally {
-            if (loadMoreBtn) {
-                loadMoreBtn.textContent = 'Carregar mais';
-                loadMoreBtn.disabled = false;
-            }
             loading = false;
         }
     }
 
-    async function fetchAll() {
-        if (loading) return;
-        loading = true;
+    window.filterHabits = function(value) {
+        loadHabits(value);
+    };
 
-        const loadAll = document.getElementById('load-all-btn');
-        const loadMoreBtn = document.getElementById('load-more');
-        if (loadAll) { loadAll.disabled = true; loadAll.textContent = 'Carregando...'; }
-        if (loadMoreBtn) { loadMoreBtn.disabled = true; }
+    window.resetHabitManager = function() {
+        loadHabits();
+    };
 
-        try {
-            const res = await fetch(`${paginateUrl}?load_all=1`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            const data = await res.json();
-
-            list.innerHTML = '';
-            list.dataset.offset = data.habits.length;
-
-            data.habits.forEach(habit => {
-                list.insertAdjacentHTML('beforeend', renderHabit(habit));
-            });
-
-            syncSelectAllCheckbox();
-            // All habits loaded — hasMore is false, so both buttons hide regardless of total
-            setLoadButtons(false, data.total ?? data.habits.length);
-
-            // Atualiza No Results no Load All tbm por segurança
-            const noResults = document.getElementById('no-results');
-            if (noResults) noResults.classList.toggle('hidden', data.habits.length > 0);
-        } catch (e) {
-            console.error('Failed to load all habits:', e);
-        } finally {
-            loading = false;
-            if (loadAll) { loadAll.disabled = false; loadAll.textContent = 'Carregar tudo'; }
-            if (loadMoreBtn) { loadMoreBtn.disabled = false; }
-        }
-    }
-
-    function resetAndFetch() {
-        list.innerHTML = '';
-        list.dataset.offset = '0';
-
-        const noResults = document.getElementById('no-results');
-        if (noResults) noResults.classList.add('hidden');
-
-        const selectAll = document.getElementById('select-all-checkbox');
-        if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
-
-        const deleteBtn = document.getElementById('delete-selected-btn');
-        if (deleteBtn) { deleteBtn.classList.add('hidden'); deleteBtn.classList.remove('flex'); }
-
-        fetchHabits();
-    }
-
-    if (loadMore) loadMore.addEventListener('click', fetchHabits);
-
-    const loadAllBtn = document.getElementById('load-all-btn');
-    if (loadAllBtn) loadAllBtn.addEventListener('click', fetchAll);
-
-    window.resetHabitPagination = resetAndFetch;
-
-    fetchHabits();
+    loadHabits();
 }
 
-document.addEventListener('DOMContentLoaded', initHabitPagination);
-window.initHabitPagination = initHabitPagination;
+document.addEventListener('DOMContentLoaded', initHabitManager);
+window.initHabitPagination = initHabitManager; // Keep old name for compatibility if needed elsewhere

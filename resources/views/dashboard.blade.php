@@ -30,8 +30,9 @@
                             oninput="filterHabits(this.value)" data-list="habit-list">
                     </div>
 
-                    <a href="{{ route('dashboard.habits.create') }}"
-                        class="inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-3 rounded-xl transition-all duration-200 whitespace-nowrap bg-brand-blue text-white shadow-sm hover:bg-brand-blue-hover hover:shadow-md active:scale-95 outline-none">
+                    <a href="{{ $habitCount >= 10 ? 'javascript:void(0)' : route('dashboard.habits.create') }}"
+                        @if($habitCount >= 10) title="Limite de 10 hábitos atingido" @endif
+                        class="inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-3 rounded-xl transition-all duration-200 whitespace-nowrap {{ $habitCount >= 10 ? 'bg-text-muted cursor-not-allowed' : 'bg-brand-blue hover:bg-brand-blue-hover text-white active:scale-95 shadow-sm hover:shadow-md' }} outline-none">
                         <span class="hidden md:inline">+ Adicionar</span>
                         <span class="inline md:hidden">+</span>
                     </a>
@@ -55,17 +56,6 @@
                 <p id="no-results" class="hidden text-[0.875rem] text-text-muted">
                     Nenhum hábito encontrado.
                 </p>
-
-                <button id="load-more"
-                    class="hidden hover:cursor-pointer inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap bg-surface/50 backdrop-blur-sm text-text-secondary border border-border-glass hover:bg-surface/80 hover:text-text-primary active:scale-95 shadow-sm">
-                    Carregar mais
-                </button>
-
-                <button id="load-all-btn"
-                    class="hidden hover:cursor-pointer inline-flex items-center justify-center gap-1.5 font-medium text-sm px-4 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap bg-surface/50 backdrop-blur-sm text-text-secondary border border-border-glass hover:bg-surface/80 hover:text-text-primary active:scale-95 shadow-sm">
-                    Carregar tudo
-                </button>
-
             </div>
 
         </div>
