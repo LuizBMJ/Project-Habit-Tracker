@@ -12,8 +12,6 @@ const TOAST_STYLES = {
     warning: 'toast-warning',
 };
 
-// FUNCTION FOR JS
-
 window.mostrarToast = function(tipo, mensagem) {
     const toast   = document.getElementById('toast');
     const message = document.getElementById('toast-message');
@@ -40,8 +38,6 @@ window.mostrarToast = function(tipo, mensagem) {
         setTimeout(() => toast.classList.add('hidden'), 500);
     }, 3000);
 };
-
-// CONTROLLER TOAST CONFIG
 
 document.addEventListener("DOMContentLoaded", () => {
 

@@ -151,16 +151,13 @@ window.toggleHabitOrder = function () {
     buttons.sort((a, b) => {
 
         if (habitOrder === 1) {
-            // ordem alfabética
             return a.dataset.name.localeCompare(b.dataset.name);
         }
 
         if (habitOrder === 2) {
-            // mais concluído
             return b.dataset.completed - a.dataset.completed;
         }
 
-        // ordem de criação
         return new Date(a.dataset.created) - new Date(b.dataset.created);
     });
 

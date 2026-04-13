@@ -264,7 +264,6 @@ class HabitControler extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        // Return all habits (up to 10 as enforced by store)
         $habits = $query->get()->map(fn($h) => [
             'id'                => $h->id,
             'name'              => $h->name,

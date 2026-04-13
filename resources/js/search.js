@@ -44,7 +44,6 @@ function searchBackend(search, list) {
     const loadMore    = document.getElementById('load-more');
     const loadAll     = document.getElementById('load-all-btn');
 
-    // Hide pagination buttons immediately when search starts
     if (loadMore) loadMore.classList.add('hidden');
     if (loadAll)  loadAll.classList.add('hidden');
     if (noResults) noResults.classList.add('hidden');
@@ -69,13 +68,12 @@ function searchBackend(search, list) {
             list.dispatchEvent(event);
         });
 
-        // Ensure buttons stay hidden during search results
         if (loadMore) loadMore.classList.add('hidden');
         if (loadAll)  loadAll.classList.add('hidden');
     })
     .catch(e => {
         console.error('Search failed:', e);
-        if (loadMore) loadMore.classList.remove('hidden'); // Fallback on error
+        if (loadMore) loadMore.classList.remove('hidden');
     });
 }
 

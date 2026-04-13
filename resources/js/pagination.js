@@ -288,4 +288,4 @@ function initHabitManager() {
 }
 
 document.addEventListener('DOMContentLoaded', initHabitManager);
-window.initHabitPagination = initHabitManager; // Keep old name for compatibility if needed elsewhere
+window.initHabitPagination = initHabitManager;
