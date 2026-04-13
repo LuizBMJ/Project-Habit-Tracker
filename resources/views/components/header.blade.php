@@ -3,7 +3,7 @@
 
         {{-- LOGO --}}
         <a href="{{ auth()->check() ? route('dashboard.habits.index') : route('site.index') }}" class="flex items-center text-none shrink-0 group transition-transform active:scale-95">
-            <img src="{{ asset('images/Habity-Logoteste.png') }}" alt="Habitly Logo" class="w-10 h-10 object-contain group-hover:rotate-6 transition-transform">
+            <img src="{{ asset('images/Habity-Logo.png') }}" alt="Habitly Logo" class="w-10 h-10 object-contain group-hover:rotate-6 transition-transform">
             <span class="text-[1rem] font-bold text-text-primary tracking-tight ml-1">Habitly</span>
         </a>
 
