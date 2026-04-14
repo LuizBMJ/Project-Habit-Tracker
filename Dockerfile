@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
     git unzip curl libpq-dev libzip-dev zip libonig-dev libpng-dev libjpeg-dev libfreetype6-dev \
@@ -10,6 +10,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
+
 COPY composer.json composer.lock* ./
 
 RUN composer install --no-dev --optimize-autoloader
