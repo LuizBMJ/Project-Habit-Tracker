@@ -55,7 +55,7 @@ Apesar da disposição do repositório vir contida com um `Dockerfile`, este arq
    - Entre no terminal de SQL e rode `CREATE DATABASE project_habit_tracker;` ou simplesmente crie um banco nomeado como `project_habit_tracker` direto pela interface do PHPMyAdmin.
 
 4. **Estruturando o Arquivo de Credenciais e Variáveis Locais (`.env`):**
-   - Dentro da raiz do repositório, você vai identificar um arquivo chamade `.env.example`, vamos copiar essa fundação:
+   - Dentro da raiz do repositório, você vai identificar um arquivo chamado `.env.example`, vamos copiar essa ele:
      ```bash
      cp .env.example .env
      ```
