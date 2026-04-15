@@ -11,17 +11,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY composer.json composer.lock* ./
-
-RUN composer install --no-dev --optimize-autoloader
-
+# Copia TUDO primeiro
 COPY . .
 
+# Cria .env antes do composer
 RUN cp .env.example .env || true
-RUN php artisan key:generate
+RUN php artisan key:generate || true
 
+# Agora instala dependências
+RUN composer install --no-dev --optimize-autoloader
+
+# Build frontend
 RUN npm install && npm run build
 
+# Permissões
 RUN chmod -R 777 storage bootstrap/cache
 
 EXPOSE 10000
