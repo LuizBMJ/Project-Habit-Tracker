@@ -99,7 +99,7 @@ class HabitControler extends Controller
         $habit->delete();
 
         return redirect()
-            ->route('dashboard.habits.index')
+            ->route('dashboard.habits.settings')
             ->with('warning', 'Hábito deletado com sucesso!');
     }
 
