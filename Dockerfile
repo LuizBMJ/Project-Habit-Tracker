@@ -38,12 +38,12 @@ RUN npm install && npm run build
 # Permissões Laravel
 RUN chmod -R 777 storage bootstrap/cache
 
-# Limpar cache Laravel (importante pro Render)
+# Limpar cache
 RUN php artisan config:clear || true
 RUN php artisan cache:clear || true
 
-# Porta do Render
 EXPOSE 10000
 
-# Rodar aplicação
-CMD php artisan serve --host=0.0.0.0 --port=10000
+CMD php artisan migrate --force && \
+    php artisan config:cache && \
+    php artisan serve --host=0.0.0.0 --port=10000
