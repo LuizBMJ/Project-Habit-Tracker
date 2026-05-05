@@ -10,99 +10,93 @@ O objetivo principal do Habitly é fornecer uma ferramenta limpa, atrativa e fá
 
 - **Rastreamento de Hábitos:** Crie e gerencie até 10 hábitos de forma direta para transformar em rotina.
 - **Gráfico Histórico de Contribuição:** Visualize seu progresso diário ao longo de diferentes anos de forma intuitiva, em um grid similar aos commits do GitHub.
-- **Cálculo de "Streaks" (Sequências Ininterruptas):** Mantém sua motivação la em cima apresentando as sequências de seus dias em cada hábito.
-- **Calendário Interativo:** Visualize e altere as datas com um calendário (Só não tente colocar que fez algo em um dia que ainda não chegou, ok?).
-- **Autenticação Flexível:** Login através de um login (obviamente) ou utilizando sua conta do Google.
-- **Modos Escuro e Claro Integrados:** Acho que é auto explicativo.
+- **Cálculo de "Streaks" (Sequências Ininterruptas):** Mantenha sua motivação em dia acompanhando as sequências de dias concluídos em cada hábito.
+- **Calendário Interativo:** Visualize e marque datas com um calendário integrado.
+- **Autenticação Flexível:** Login via e-mail/senha ou utilizando sua conta do Google.
+- **Modos Escuro e Claro Integrados:** Alterne entre temas conforme sua preferência.
 
 ## Tecnologias Utilizadas
 
-Este projeto foi construído em uma stack moderna, veloz e robusta de Backend e Frontend:
-
-- **Backend:** PHP 8.4 e o Framework [Laravel 13](https://laravel.com/).
-- **Frontend:** [Tailwind CSS v4](https://tailwindcss.com/) acoplado ao Vite, construindo telas pelas Blade Templates (com partes customizadas orientadas com JavaScript Vanilla para dinâmica de dados).
-- **Banco de Dados:** Versátil, podendo utilizar Servidor Local via XAMPP (MySQL/MariaDB) para Desenvolvimento ou PostgreSQL (usualmente utilizado em implantação na provedora Render).
-- **Autenticação:** Laravel Socialite (para Google Login).
-- **Infraestrutura:** A raiz conta com um `Dockerfile`, útil para gerenciar a publicação e portabilidade da arquitetura em ambientes em nuvem.
+- **Backend:** PHP 8.4 e [Laravel 13](https://laravel.com/)
+- **Frontend:** [Tailwind CSS v4](https://tailwindcss.com/) com [Vite](https://vitejs.dev/) e Blade Templates (com JavaScript Vanilla para interatividade)
+- **Banco de Dados:** PostgreSQL (via Docker)
+- **Autenticação:** Laravel Socialite (Login com Google)
+- **Containerização:** Docker e Docker Compose
 
 ## Como Rodar o Projeto Localmente
 
-Apesar da disposição do repositório vir contida com um `Dockerfile`, este arquivo foi planejado em tese para rodar o comando final de compilação em serviços de cloud computing (como Render). Dessa maneira, não posso garantir o seu funcionamento para rodar puramente local. Se você utiliza o **XAMPP** para gerenciar recursos MySQL e PHP, use essas instruções para rodar nativamente:
+O projeto roda inteiramente via **Docker**, eliminando a necessidade de instalar PHP, Node.js ou PostgreSQL manualmente na sua máquina.
 
 ### Pré-requisitos
-- PHP 8.3 ou superior instalado e liberado em Variáveis de Ambiente.
-- [Node.js](https://nodejs.org/en/) e gerenciador universal NPM para empacotamento JavaScript e CSS.
-- [Composer](https://getcomposer.org/) so baixa ai.
-- XAMPP (Opcional, porém amplamente recomendado para emulação em servidor Apache/MySQL no Desenvolvimento).
 
-### Passo a passo para o ambiente de Desenvolvimento e Localhost
+- [Docker](https://www.docker.com/products/docker-desktop/) instalado e rodando
+- [Docker Compose](https://docs.docker.com/compose/) (já vem incluso no Docker Desktop)
 
-1. **Clone do repositório remoto:**
+### Passo a Passo
+
+1. **Clone o repositório:**
    ```bash
    git clone https://github.com/LuizBMJ/Projeto-Gerenciador-de-Habitos.git Project-Habit-Tracker
    cd Project-Habit-Tracker
    ```
 
-2. **Instalação das Bibliotecas por Dependência (Vendors e Nodes):**
+2. **Suba os containers:**
    ```bash
-   composer install
-   npm install
+   docker-compose up --build
    ```
 
-3. **Iniciando o Servidor de Banco de Dados de Retaguarda (XAMPP):**
-   - Inicie o servio **Apache** e **MySQL** dentro do seu Painel de Controle no XAMPP ou local de escolha.
-   - Abra a aba `http://localhost/phpmyadmin` no seu navegador favorito (Brave né?).
-   - Entre no terminal de SQL e rode `CREATE DATABASE project_habit_tracker;` ou simplesmente crie um banco nomeado como `project_habit_tracker` direto pela interface do PHPMyAdmin.
+   Esse comando irá:
+   - Construir a imagem da aplicação com PHP 8.4 e Node.js 20
+   - Subir o banco de dados PostgreSQL
+   - Aguardar o banco ficar disponível
+   - Executar as migrations automaticamente
+   - Gerar a `APP_KEY` caso não exista
+   - Iniciar o servidor Laravel (porta `10000`) e o Vite (porta `5173`)
 
-4. **Estruturando o Arquivo de Credenciais e Variáveis Locais (`.env`):**
-   - Dentro da raiz do repositório, você vai identificar um arquivo chamado `.env.example`, vamos copiar essa ele:
-     ```bash
-     cp .env.example .env
-     ```
-   - Gere imediatamente uma Chave Aleatória de Segurança e Assinatura Criptográfica para seu Projeto:
-     ```bash
-     php artisan key:generate
-     ```
-   - Abra seu novo arquivo `.env` para apontar ao seu MySQL ativo (como o foco agora é a execução manual em vez do Render apontando para `pgsql`, mude-as preferencialmente para MySQL):
-     ```env
-     DB_CONNECTION=mysql
-     DB_HOST=127.0.0.1
-     DB_PORT=3306
-     DB_DATABASE=project_habit_tracker
-     DB_USERNAME=root
-     DB_PASSWORD=
-     ```
+3. **Acesse a aplicação:**
+   Abra seu navegador em `http://localhost:10000`
 
-5. **(Opcional) Testando e Ativando as Configurações do Google Auth**
-   Caso você ou colegas pretendam utilizar o Login pelo Google, precisará gerar um ID no Google Cloud e passar suas credenciais na devida seção do sistema (Esse bagulho é chato viu):
-   ```env
-   GOOGLE_CLIENT_ID="sua_client_id_aqui"
-   GOOGLE_CLIENT_SECRET="seu_client_secret_aqui"
-   GOOGLE_REDIRECT_URI="http://127.0.0.1:8000/auth/google/callback"
-   ```
-   > **Aviso Importante:** Este passo **NÃO** é estritamente obrigatório. Você está livre para utilizar o formulário normal de registro/login caso não tenha intenção de testar o Log-in via Google no ambiente de testes.
+### Comandos Úteis
 
-6. **Refletir Estruturas da Base e Executar as Migrations:**
-   Vai bota tudo no seu recém criado banco MySQL através dos "plants" de estrutura do Laravel:
-   ```bash
-   php artisan migrate
-   ```
+```bash
+# Parar os containers
+docker-compose down
 
-7. **Inicie, por final, o Servidor Integrado:**
-   So confia e faz:
-   
-   **Pelo Script Concorrente do Composer** (Roda npm e PHP serve juntos):
-   ```bash
-   composer run dev
-   ```
+# Parar e remover os volumes (reseta o banco de dados)
+docker-compose down -v
 
-   **Alternativamente, em duas abas de terminal ou CLI independentes:**
-   ```bash
-   php artisan serve
-   ```
-   *E no terminal número 2:*
-   ```bash
-   npm run dev
-   ```
+# Rodar em segundo plano
+docker-compose up -d
 
-Se tudo for perfeitamente aplicado até este momento (no meu caso ja teria feito tudo errado) basta só clicar no "link" que aparece no terminal (quase sempre `http://127.0.0.1:8000`), para iniciar o site.
+# Ver logs da aplicação
+docker-compose logs -f app
+
+# Acessar o terminal do container
+docker-compose exec app bash
+```
+
+### (Opcional) Configurando o Google Auth
+
+Caso queira habilitar o login via Google, adicione as credenciais no arquivo `.env` na raiz do projeto:
+
+```env
+GOOGLE_CLIENT_ID="sua_client_id_aqui"
+GOOGLE_CLIENT_SECRET="seu_client_secret_aqui"
+GOOGLE_REDIRECT_URI="http://localhost:10000/auth/google/callback"
+```
+
+> **Nota:** Este passo **não** é obrigatório. Você pode usar o formulário normal de registro/login sem configurar o Google.
+
+## Estrutura de Arquivos Docker
+
+```
+dockerfile/
+├── dev/
+│   └── Dockerfile.dev    # Ambiente local com hot-reload (Vite)
+└── prod/
+    └── Dockerfile.prod   # Produção com assets pré-compilados (multi-stage build)
+
+docker-entrypoint.sh      # Script de inicialização do ambiente dev
+docker-compose.yml        # Orquestração local (app + PostgreSQL)
+.dockerignore             # Arquivos excluídos do contexto Docker
+```
