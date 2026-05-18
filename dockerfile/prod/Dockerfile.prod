@@ -8,15 +8,24 @@ RUN npm install
 
 COPY vite.config.js ./
 COPY resources ./resources
+COPY public ./public
 
 RUN npm run build
 
 FROM php:8.4-cli
 
-# Instalar dependências do sistema
+# Dependências do sistema
 RUN apt-get update && apt-get install -y \
-    git unzip curl libpq-dev libzip-dev zip libonig-dev \
-    libpng-dev libjpeg-dev libfreetype6-dev \
+    git \
+    unzip \
+    curl \
+    libpq-dev \
+    libzip-dev \
+    zip \
+    libonig-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     && docker-php-ext-install \
     pdo \
     pdo_pgsql \
@@ -25,26 +34,39 @@ RUN apt-get update && apt-get install -y \
     zip \
     bcmath \
     gd \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar Composer
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copiar dependências PHP
+# Dependências PHP
 COPY composer.json composer.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts
 
-# Copiar aplicação
+# Copiar aplicação inteira
 COPY . .
 
-# Copiar assets buildados
-COPY --from=node-builder /build/public/build public/build
+# Assets do Vite
+COPY --from=node-builder /build/public/build ./public/build
 
-# Criar diretórios necessários
-RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
+# Dump autoload
+RUN composer dump-autoload --optimize
+
+# Estrutura Laravel
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
 
 # Remover .env local
 RUN rm -f .env
@@ -52,12 +74,9 @@ RUN rm -f .env
 # Permissões
 RUN chmod -R 775 storage bootstrap/cache
 
-# Otimizar Laravel
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Limpar caches
+RUN php artisan optimize:clear
 
-EXPOSE ${PORT:-10000}
+EXPOSE 10000
 
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
-
