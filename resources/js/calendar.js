@@ -113,7 +113,7 @@ function initCalendar() {
         dateClick: function(info) {
             // Require a habit to be selected first
             if (selectedHabit === null) {
-                mostrarToast('error', 'Select a habit first');
+                mostrarToast('error', 'Selecione um hábito primeiro');
                 return;
             }
 
