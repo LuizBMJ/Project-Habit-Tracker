@@ -37,6 +37,9 @@ class Habit extends Model
     // Check if this habit was completed today
     public function wasCompletedToday(): bool
     {
+        if ($this->relationLoaded('habitLogs')) {
+            return $this->wasCompletedTodayFromLoaded();
+        }
         return $this->habitLogs()
             ->where('completed_at', Carbon::today()->toDateString())
             ->exists();
@@ -83,6 +86,9 @@ class Habit extends Model
     // Calculate the current streak - number of consecutive days completed
     public function getCurrentStreak(): int
     {
+        if ($this->relationLoaded('habitLogs')) {
+            return $this->getCurrentStreakFromLoaded();
+        }
         // Get all completion dates, newest first
         $logs = $this->habitLogs()
             ->orderBy('completed_at', 'desc')
@@ -107,6 +113,46 @@ class Habit extends Model
         $currentDate = $lastLog->copy();
 
         // Count consecutive days
+        foreach ($logs as $logDate) {
+            if ($logDate->equalTo($currentDate)) {
+                $streak++;
+                $currentDate->subDay();
+            } elseif ($logDate->lessThan($currentDate)) {
+                break;
+            }
+        }
+
+        return $streak;
+    }
+
+    public function wasCompletedTodayFromLoaded(): bool
+    {
+        $today = Carbon::today()->toDateString();
+        return $this->habitLogs->contains(fn ($log) => $log->completed_at === $today);
+    }
+
+    public function getCurrentStreakFromLoaded(): int
+    {
+        $logs = $this->habitLogs
+            ->map(fn ($log) => Carbon::parse($log->completed_at)->startOfDay())
+            ->sortByDesc('timestamp')
+            ->values();
+
+        if ($logs->isEmpty()) {
+            return 0;
+        }
+
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+        $lastLog = $logs->first();
+
+        if (! $lastLog->equalTo($today) && ! $lastLog->equalTo($yesterday)) {
+            return 0;
+        }
+
+        $streak = 0;
+        $currentDate = $lastLog->copy();
+
         foreach ($logs as $logDate) {
             if ($logDate->equalTo($currentDate)) {
                 $streak++;

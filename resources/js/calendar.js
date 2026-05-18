@@ -4,6 +4,8 @@
 // It allows users to see their habits on a calendar and toggle completion
 //
 
+import { Calendar } from 'fullcalendar';
+
 // Currently selected habit filter (null = "all" habits)
 let selectedHabit = null;
 
@@ -59,7 +61,7 @@ function initCalendar() {
     }
 
     // Create FullCalendar instance with custom settings
-    calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
         height: "auto",

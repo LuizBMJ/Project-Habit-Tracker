@@ -330,12 +330,12 @@ class HabitControler extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
-        // Format habit data
-        $habits = $query->get()->map(fn ($h) => [
+        // Format habit data - eager load to avoid N+1 queries
+        $habits = $query->with('habitLogs')->get()->map(fn ($h) => [
             'id' => $h->id,
             'name' => $h->name,
-            'wasCompletedToday' => $h->wasCompletedToday(),
-            'streak' => $h->getCurrentStreak(),
+            'wasCompletedToday' => $h->wasCompletedTodayFromLoaded(),
+            'streak' => $h->getCurrentStreakFromLoaded(),
         ]);
 
         return response()->json([

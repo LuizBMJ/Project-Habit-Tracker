@@ -10,6 +10,17 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('fullcalendar')) {
+                        return 'fullcalendar';
+                    }
+                },
+            },
+        },
+    },
     server: {
         host: '0.0.0.0',
         port: 5173,
