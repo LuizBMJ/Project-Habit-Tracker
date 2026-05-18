@@ -1,8 +1,14 @@
 FROM node:20-alpine AS node-builder
+
 WORKDIR /build
+
 COPY package.json package-lock.json ./
+
 RUN npm install
-COPY vite.config.js resources/ ./
+
+COPY vite.config.js ./
+COPY resources ./resources
+
 RUN npm run build
 
 FROM php:8.4-cli
@@ -28,12 +34,13 @@ WORKDIR /app
 
 # Copiar dependências PHP
 COPY composer.json composer.lock ./
+
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copiar aplicação
 COPY . .
 
-# Copiar assets buildados do node-builder
+# Copiar assets buildados
 COPY --from=node-builder /build/public/build public/build
 
 # Criar diretórios necessários
@@ -54,3 +61,4 @@ EXPOSE ${PORT:-10000}
 
 CMD php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+
