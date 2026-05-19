@@ -1,102 +1,118 @@
-# Habitly - Gerenciador de Hábitos
+# Habitly - Habit Tracker
 
-**Habitly** é um gerenciador de hábitos pessoais focado em produtividade e simplicidade. Acompanhe seus hábitos em até 10 rotinas diárias com um sistema visual de marcação semelhante aos gráficos de contribuição do GitHub, acumule "streaks" (dias consecutivos) e mantenha-se motivado.
+> Habit tracker with streaks, contribution graphs, and Google authentication
 
-## Objetivo do Projeto
+![Badge](https://img.shields.io/badge/Laravel_13-FF2D20?style=flat-square\&logo=laravel\&logoColor=white)
+![Badge](https://img.shields.io/badge/PHP_8.4-777BB4?style=flat-square\&logo=php\&logoColor=white)
+![Badge](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square\&logo=tailwindcss\&logoColor=white)
+![Badge](https://img.shields.io/badge/Vite-646CFF?style=flat-square\&logo=vite\&logoColor=white)
+![Badge](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square\&logo=postgresql\&logoColor=white)
+![Badge](https://img.shields.io/badge/Docker-2496ED?style=flat-square\&logo=docker\&logoColor=white)
+![Badge](https://img.shields.io/badge/Google_Auth-4285F4?style=flat-square\&logo=google\&logoColor=white)
+![Badge](https://img.shields.io/badge/License-MIT-yellow?style=flat-square\&logo=open-source-initiative\&logoColor=white)
 
-O objetivo principal do Habitly é fornecer uma ferramenta limpa, atrativa e fácil de usar para acompanhar sua rotina diária e atividades. Ele ajuda você a construir novos hábitos calculando ativamente quantos dias consecutivos você alcançou uma meta, e apresentando os dados com um gráfico histórico e visualização em calendário, tornando a consistência visivelmente mais encorajadora.
+---
 
-## Funcionalidades
+## 📌 Overview
 
-- **Rastreamento de Hábitos:** Crie e gerencie até 10 hábitos de forma direta para transformar em rotina.
-- **Gráfico Histórico de Contribuição:** Visualize seu progresso diário ao longo de diferentes anos de forma intuitiva, em um grid similar aos commits do GitHub.
-- **Cálculo de "Streaks" (Sequências Ininterruptas):** Mantenha sua motivação em dia acompanhando as sequências de dias concluídos em cada hábito.
-- **Calendário Interativo:** Visualize e marque datas com um calendário integrado.
-- **Autenticação Flexível:** Login via e-mail/senha ou utilizando sua conta do Google.
-- **Modos Escuro e Claro Integrados:** Alterne entre temas conforme sua preferência.
+Habitly is a personal habit tracking application focused on productivity, simplicity, and consistency.
+The platform allows users to manage daily habits, track streaks, and visualize progress using contribution-style graphs inspired by GitHub commits.
+Built with Laravel 13 and Tailwind CSS, the project includes dark/light themes, Google authentication, an interactive calendar, and a fully Dockerized development environment for streamlined setup and deployment.
 
-## Tecnologias Utilizadas
+## 🛠️ Technologies
 
-- **Backend:** PHP 8.4 e [Laravel 13](https://laravel.com/)
-- **Frontend:** [Tailwind CSS v4](https://tailwindcss.com/) com [Vite](https://vitejs.dev/) e Blade Templates (com JavaScript Vanilla para interatividade)
-- **Banco de Dados:** PostgreSQL (via Docker)
-- **Autenticação:** Laravel Socialite (Login com Google)
-- **Containerização:** Docker e Docker Compose
+* **Laravel 13** — Backend framework and application architecture
+* **PHP 8.4** — Main backend programming language
+* **Tailwind CSS v4** — Utility-first CSS framework for UI design
+* **Vite** — Frontend build tool and hot-reload development server
+* **Blade Templates** — Server-side rendering engine for Laravel
+* **PostgreSQL** — Relational database for application data
+* **Laravel Socialite** — Google authentication integration
+* **Docker & Docker Compose** — Containerized development environment
+* **JavaScript (Vanilla)** — Interactive frontend functionality
 
-## Como Rodar o Projeto Localmente
+## 📁 Project Structure
 
-O projeto roda inteiramente via **Docker**, eliminando a necessidade de instalar PHP, Node.js ou PostgreSQL manualmente na sua máquina.
+```bash id="m8q2tk"
+.
+├── app/                            # Core Laravel application logic
+├── resources/
+│   ├── views/                      # Blade templates
+│   ├── css/                        # Tailwind CSS files
+│   └── js/                         # Frontend JavaScript
+│
+├── routes/                         # Application routes
+├── database/                       # Migrations and seeders
+├── public/                         # Public assets and entry point
+├── storage/                        # Logs and generated files
+│
+├── dockerfile/
+│   ├── dev/
+│   │   └── Dockerfile.dev          # Development Docker image
+│   └── prod/
+│       └── Dockerfile.prod         # Production Docker image
+│
+├── docker-entrypoint.sh            # Development startup script
+├── docker-compose.yml              # Docker Compose configuration
+├── .dockerignore                   # Docker ignored files
+├── .env.example                    # Environment variables example
+├── README.md                       # Project documentation
+└── LICENSE                         # Project license
+```
 
-### Pré-requisitos
+## 🚀 Getting Started
 
-- [Docker](https://www.docker.com/products/docker-desktop/) instalado e rodando
-- [Docker Compose](https://docs.docker.com/compose/) (já vem incluso no Docker Desktop)
+Clone the repository:
 
-### Passo a Passo
+```bash id="z7x4pa"
+git clone https://github.com/LuizBMJ/habitly-habit-tracker.git
+```
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/LuizBMJ/Projeto-Gerenciador-de-Habitos.git Project-Habit-Tracker
-   cd Project-Habit-Tracker
-   ```
+Navigate to the project folder:
 
-2. **Suba os containers:**
-   ```bash
-   docker-compose up --build
-   ```
+```bash id="r5m1vk"
+cd habitly-habit-tracker
+```
 
-   Esse comando irá:
-   - Construir a imagem da aplicação com PHP 8.4 e Node.js 20
-   - Subir o banco de dados PostgreSQL
-   - Aguardar o banco ficar disponível
-   - Executar as migrations automaticamente
-   - Gerar a `APP_KEY` caso não exista
-   - Iniciar o servidor Laravel (porta `10000`) e o Vite (porta `5173`)
+Start the Docker containers:
 
-3. **Acesse a aplicação:**
-   Abra seu navegador em `http://localhost:10000`
+```bash id="n3q8fy"
+docker-compose up --build
+```
 
-### Comandos Úteis
+After the containers are ready, access the application at:
 
-```bash
-# Parar os containers
+```text id="t9k6pw"
+http://localhost:10000
+```
+
+Useful Docker commands:
+
+```bash id="x2v7la"
+# Stop containers
 docker-compose down
 
-# Parar e remover os volumes (reseta o banco de dados)
+# Stop containers and remove volumes
 docker-compose down -v
 
-# Rodar em segundo plano
+# Run containers in detached mode
 docker-compose up -d
 
-# Ver logs da aplicação
+# View application logs
 docker-compose logs -f app
 
-# Acessar o terminal do container
+# Access the container terminal
 docker-compose exec app bash
 ```
 
-### (Opcional) Configurando o Google Auth
+Optional Google authentication setup:
 
-Caso queira habilitar o login via Google, adicione as credenciais no arquivo `.env` na raiz do projeto:
-
-```env
-GOOGLE_CLIENT_ID="sua_client_id_aqui"
-GOOGLE_CLIENT_SECRET="seu_client_secret_aqui"
+```env id="f1p8zn"
+GOOGLE_CLIENT_ID="your_client_id"
+GOOGLE_CLIENT_SECRET="your_client_secret"
 GOOGLE_REDIRECT_URI="http://localhost:10000/auth/google/callback"
 ```
 
-> **Nota:** Este passo **não** é obrigatório. Você pode usar o formulário normal de registro/login sem configurar o Google.
+## 📄 License
 
-## Estrutura de Arquivos Docker
-
-```
-dockerfile/
-├── dev/
-│   └── Dockerfile.dev    # Ambiente local com hot-reload (Vite)
-└── prod/
-    └── Dockerfile.prod   # Produção com assets pré-compilados (multi-stage build)
-
-docker-entrypoint.sh      # Script de inicialização do ambiente dev
-docker-compose.yml        # Orquestração local (app + PostgreSQL)
-.dockerignore             # Arquivos excluídos do contexto Docker
-```
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
