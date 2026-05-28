@@ -26,7 +26,7 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         cors: true,
-        origin: 'http://0.0.0.0:5173',
+        origin: 'http://localhost:5173',
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
