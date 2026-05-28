@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
@@ -40,11 +41,18 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        try {
+            Auth::logout();
 
-        $request->session()->invalidate();
-        
-        $request->session()->regenerateToken();
+            $request->session()->invalidate();
+
+            $request->session()->regenerateToken();
+        } catch (\Exception $e) {
+            Log::error('Logout failed: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'ip' => $request->ip(),
+            ]);
+        }
 
         return redirect(route('site.index'));
     }
