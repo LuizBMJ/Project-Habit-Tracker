@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'security.headers' => SecurityHeaders::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn () => route('login.index'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
