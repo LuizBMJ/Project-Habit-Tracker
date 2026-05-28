@@ -22,6 +22,27 @@ let habitOrder = 0;
 // Highlights the selected button and refreshes calendar events
 window.selectHabit = function(id, el) {
 
+    // If clicking the already-selected habit, unselect it
+    if (el.classList.contains('bg-surface-solid')) {
+        selectedHabit = null;
+
+        document.querySelectorAll('[data-habit]').forEach(btn => {
+            btn.classList.remove('bg-surface-solid', 'text-brand-blue', 'border-brand-blue/50', 'shadow-md', 'scale-105');
+            btn.classList.add('bg-transparent', 'text-text-secondary', 'border-border-glass');
+        });
+
+        const allBtn = document.querySelector('[data-all]');
+        if (allBtn) {
+            allBtn.classList.remove('bg-transparent', 'text-text-secondary', 'border-border-glass');
+            allBtn.classList.add('bg-surface-solid', 'text-brand-blue', 'border-brand-blue/50', 'shadow-md', 'scale-105');
+        }
+
+        if (calendar) {
+            calendar.refetchEvents();
+        }
+        return;
+    }
+
     selectedHabit = id;
 
     // Remove active styles from all buttons
@@ -208,9 +229,9 @@ window.toggleHabitOrder = function () {
 
     // Toast messages for each mode
     const modes = [
-        "Creation order",
-        "Alphabetical order",
-        "Most completed"
+        "Ordem de criação",
+        "Ordem alfabética",
+        "Mais concluídos"
     ];
 
     mostrarToast('success', modes[habitOrder]);
