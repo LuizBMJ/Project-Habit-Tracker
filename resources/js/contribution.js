@@ -8,7 +8,7 @@
 
     // Get CSRF token for requests
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    
+
     // Keep track of which cell is currently active (highlighted)
     let activeCell = null;
 
@@ -67,7 +67,7 @@
 
             // If no habits completed, show message and don't open panel
             if (count === 0) {
-                mostrarToast('error', 'No habits completed on this day.');
+                mostrarToast('error', 'Nenhum hábito foi completado nesse dia.');
                 window.closeDayDetail();
                 return;
             }
@@ -80,7 +80,7 @@
 
             // Remove highlight from previously active cell
             if (activeCell) activeCell.classList.remove('ring-2', 'ring-brand-orange');
-            
+
             // Highlight this cell
             activeCell = cell;
             cell.classList.add('ring-2', 'ring-brand-orange');
@@ -113,7 +113,7 @@
             })
             .catch(function () {
                 showLoading(false);
-                mostrarToast('error', 'Error loading habits.');
+                mostrarToast('error', 'Erro ao carregar os hábitos.');
                 closeDayDetail();
             });
         });
